@@ -1,5 +1,5 @@
 // Bump VERSION whenever you change any file, so installed copies update.
-const VERSION = 'sudoku-v1';
+const VERSION = 'sudoku-v3';
 const FILES = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-512-maskable.png'];
 

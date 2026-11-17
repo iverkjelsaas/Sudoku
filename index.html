@@ -31,7 +31,7 @@ h1{font-size:24px;margin:0;font-weight:800;letter-spacing:.2px}
 .info b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
 .timer{display:flex;align-items:center;gap:4px}
 .timer .iconbtn{width:30px;height:30px}
-.boardwrap{position:relative;width:min(100%,max(280px,calc(100dvh - 345px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))));aspect-ratio:1;margin:0 auto;container-type:inline-size}
+.boardwrap{position:relative;width:min(100%,max(280px,calc(100dvh - 290px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))));aspect-ratio:1;margin:0 auto;container-type:inline-size}
 .board{display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);width:100%;height:100%;border:2px solid var(--thick);border-radius:4px;overflow:hidden}
 .cell{position:relative;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:7.2cqw;color:var(--user);background:var(--bg);cursor:pointer;line-height:1}
 .cell.bx{border-right:2px solid var(--thick)}
@@ -70,8 +70,18 @@ h1{font-size:24px;margin:0;font-weight:800;letter-spacing:.2px}
 .num.done{visibility:hidden}
 .notesmode .num{color:var(--muted)}
 .num small{position:absolute;left:0;right:0;bottom:2px;font-size:10px;color:var(--muted)}
-.newgame{height:50px;border:0;border-radius:10px;background:var(--accent);color:#fff;font-size:17px;font-weight:600;margin-top:2px}
-.newgame:active{opacity:.85}
+header{position:relative}
+.menu{position:absolute;top:44px;right:0;z-index:15;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:6px;min-width:240px;display:none;transform-origin:top right}
+.menu.show{display:block;animation:menuin .15s ease-out}
+@keyframes menuin{from{opacity:0;transform:scale(.94)}}
+.mi{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;color:var(--text);font-size:15.5px;padding:12px;border-radius:9px;text-align:left}
+.mi:active{background:var(--btn)}
+.mi svg{color:var(--accent);flex:none}
+.msep{height:1px;background:var(--line);margin:4px 10px}
+.sw{margin-left:auto;width:42px;height:25px;border-radius:13px;background:var(--line);position:relative;transition:background .2s;flex:none}
+.sw::after{content:'';position:absolute;top:2.5px;left:2.5px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.sw.on{background:var(--accent)}
+.sw.on::after{transform:translateX(17px)}
 .mbg{position:fixed;inset:0;background:rgba(20,28,40,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
 .mbg.show{display:flex}
 .modal{background:var(--card);border-radius:16px;padding:22px 20px 16px;width:100%;max-width:340px;box-shadow:var(--shadow);text-align:center;animation:rise .2s ease-out}
@@ -98,7 +108,14 @@ svg{display:block}
   <header>
     <h1>Sudoku</h1>
     <div style="display:flex">
-      <button class="iconbtn" id="themeBtn" aria-label="Toggle dark mode"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      <button class="iconbtn" id="menuBtn" aria-label="Menu"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+    <div class="menu" id="menu">
+      <button class="mi" id="miNew"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>New Game</button>
+      <button class="mi" id="miRestart"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Restart puzzle</button>
+      <div class="msep"></div>
+      <button class="mi" id="miSound"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>Sound<span class="sw" id="swSound"></span></button>
+      <button class="mi" id="miDark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Dark mode<span class="sw" id="swDark"></span></button>
     </div>
   </header>
   <div class="diffs" id="diffs"></div>
@@ -119,7 +136,6 @@ svg{display:block}
     <button class="ctl" id="hintBtn"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg><span class="badge" id="hintBadge">3</span></span>Hint</button>
   </div>
   <div class="pad" id="pad"></div>
-  <button class="newgame" id="newBtn">New Game</button>
 </div>
 <div class="mbg" id="mbg"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
@@ -188,6 +204,28 @@ const load=()=>{try{const s=JSON.parse(localStorage.getItem(KEY));return s&&s.so
 const getBest=()=>{try{return JSON.parse(localStorage.getItem(KEY+'-best'))||{};}catch(e){return {};}};
 const setBest=b=>{try{localStorage.setItem(KEY+'-best',JSON.stringify(b));}catch(e){}};
 const fmt=t=>{const h=t/3600|0,m=(t/60|0)%60,s=t%60;return (h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(s).padStart(2,'0');};
+/* ---------- sound ---------- */
+let actx=null,soundOn=true;
+try{soundOn=localStorage.getItem(KEY+'-sound')!=='0';}catch(e){}
+function ac(){
+  if(!actx){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;actx=new A();}
+  if(actx.state==='suspended')actx.resume();return actx;
+}
+function tone(f1,f2,dur,type,vol,delay){
+  const a=ac();if(!a)return;
+  const t=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain();
+  o.type=type;o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+0.008);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+0.03);
+}
+const SFX={
+  place(){tone(880,640,0.10,'sine',0.28);tone(1760,1280,0.06,'sine',0.07);},
+  note(){tone(1250,1050,0.045,'triangle',0.10);},
+  wrong(){tone(170,140,0.12,'square',0.075);tone(170,135,0.15,'square',0.075,0.15);}
+};
+function sfx(n){if(!soundOn)return;try{SFX[n]();}catch(e){}}
+function renderSound(){$('swSound').classList.toggle('on',soundOn);}
+renderSound();
 const blocked=()=>!S||S.over||S.won||S.paused||modalOpen;
 
 /* ---------- build DOM ---------- */
@@ -256,16 +294,16 @@ function input(v){
   if(S.puzzle[i]||(S.values[i]&&S.values[i]===S.solution[i]))return;
   if(S.notesMode){
     if(S.values[i])return;
-    S.hist.push({i,v:0,n:S.notes[i],peers:[]});S.notes[i]^=1<<v;render();save();return;
+    S.hist.push({i,v:0,n:S.notes[i],peers:[]});S.notes[i]^=1<<v;sfx('note');render();save();return;
   }
   if(S.values[i]===v)return;
   const h={i,v:S.values[i],n:S.notes[i],peers:[]};
   S.values[i]=v;S.notes[i]=0;
   if(v===S.solution[i]){
-    S.score+=D[S.diff].pts;clearPeerNotes(i,v,h);S.hist.push(h);
+    S.score+=D[S.diff].pts;clearPeerNotes(i,v,h);S.hist.push(h);sfx('place');
     render();animV(i,'pop');checkUnits(i);checkWin();
   }else{
-    S.mistakes++;S.hist.push(h);render();animV(i,'shake');
+    S.mistakes++;S.hist.push(h);sfx('wrong');render();animV(i,'shake');
     if(navigator.vibrate)try{navigator.vibrate(60);}catch(e){}
     if(S.mistakes>=3){S.over=true;setTimeout(gameOver,350);}
   }
@@ -293,7 +331,7 @@ function hint(){
     if(!open.length)return;i=open[Math.random()*open.length|0];S.sel=i;
   }
   const v=S.solution[i],h={i,v:S.values[i],n:S.notes[i],peers:[]};
-  S.values[i]=v;S.notes[i]=0;clearPeerNotes(i,v,h);S.hist.push(h);S.hints--;
+  S.values[i]=v;S.notes[i]=0;clearPeerNotes(i,v,h);S.hist.push(h);S.hints--;sfx('place');
   render();animV(i,'pop');checkUnits(i);checkWin();save();
 }
 function toggleNotes(){if(!S||S.over||S.won)return;S.notesMode=!S.notesMode;render();save();}
@@ -377,7 +415,6 @@ $('undoBtn').addEventListener('click',undo);
 $('eraseBtn').addEventListener('click',erase);
 $('notesBtn').addEventListener('click',toggleNotes);
 $('hintBtn').addEventListener('click',hint);
-$('newBtn').addEventListener('click',newGameModal);
 $('pauseBtn').addEventListener('click',()=>setPaused(!S.paused));
 $('playBtn').addEventListener('click',()=>setPaused(false));
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&S&&!S.over&&!S.won){S.paused=true;render();save();}});
@@ -403,10 +440,21 @@ setInterval(()=>{
 },1000);
 
 /* theme */
-function applyTheme(d){document.documentElement.classList.toggle('dark',d);document.querySelector('meta[name=theme-color]').content=d?'#1b1f27':'#ffffff';}
+function applyTheme(d){if($('swDark'))$('swDark').classList.toggle('on',d);document.documentElement.classList.toggle('dark',d);document.querySelector('meta[name=theme-color]').content=d?'#1b1f27':'#ffffff';}
 let dark=false;try{dark=localStorage.getItem(KEY+'-dark')==='1';}catch(e){}
 applyTheme(dark);
-$('themeBtn').addEventListener('click',()=>{dark=!dark;applyTheme(dark);try{localStorage.setItem(KEY+'-dark',dark?'1':'0');}catch(e){}});
+function renderDark(){$('swDark').classList.toggle('on',dark);}
+renderDark();
+const menu=$('menu');
+function closeMenu(){menu.classList.remove('show');}
+$('menuBtn').addEventListener('click',e=>{e.stopPropagation();menu.classList.toggle('show');});
+document.addEventListener('pointerdown',e=>{if(menu.classList.contains('show')&&!menu.contains(e.target)&&!e.target.closest('#menuBtn'))closeMenu();});
+$('miNew').addEventListener('click',()=>{closeMenu();newGameModal();});
+$('miRestart').addEventListener('click',()=>{closeMenu();if(!S)return;
+  if(!S.hist.length&&!S.over&&!S.won){toast('Nothing to restart yet');return;}
+  modal('<h2>Restart puzzle?</h2><p>This clears your numbers, notes, mistakes and timer for this puzzle.</p><button class="mbtn primary" data-a="restart">Restart</button><button class="mbtn muted" data-a="close">Cancel</button>');});
+$('miSound').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem(KEY+'-sound',soundOn?'1':'0');}catch(e){}renderSound();if(soundOn)sfx('place');});
+$('miDark').addEventListener('click',()=>{dark=!dark;applyTheme(dark);try{localStorage.setItem(KEY+'-dark',dark?'1':'0');}catch(e){}});
 
 /* start */
 S=load();
